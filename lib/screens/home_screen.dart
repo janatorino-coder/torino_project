@@ -1,6 +1,8 @@
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../widgets/app_button.dart';
+import 'login_screen.dart';
 
 const Color trikeRed = Color(0xFFD62828);
 const Color trikeYellow = Color(0xFFFFC928);
@@ -8,25 +10,66 @@ const Color trikeGreen = Color(0xFF239447);
 const Color trikeNavy = Color(0xFF142B45);
 const Color trikePale = Color(0xFFFFF9E9);
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _showLogin = false;
+
+  void _openLogin() => setState(() => _showLogin = true);
+  void _closeLogin() => setState(() => _showLogin = false);
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildNavigation(context),
-              _buildHero(context),
-              _buildFeatures(),
-              _buildFooter(),
-            ],
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildNavigation(context),
+                  _buildHero(context),
+                  _buildFeatures(),
+                  _buildFooter(),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+
+        if (_showLogin) ...[
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _closeLogin,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 6,
+                  sigmaY: 6,
+                ),
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.42),
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 450),
+                child: LoginScreen(onClose: _closeLogin),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -38,50 +81,55 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildLogo(),
+          const Icon(
+            Icons.electric_rickshaw_rounded,
+            color: trikeRed,
+            size: 32,
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'TRIKEFIND',
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.bold,
+              color: trikeNavy,
+              letterSpacing: 1,
+            ),
+          ),
           const Spacer(),
           if (MediaQuery.sizeOf(context).width > 600) ...[
             TextButton(
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/',
-                  (route) => false,
-                );
-              },
+              onPressed: () {},
               child: const Text(
                 'Home',
                 style: TextStyle(color: trikeNavy),
               ),
             ),
-            const SizedBox(width: 12),
             TextButton(
-              onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    title: const Text('About TRIKEFIND'),
-                    content: const Text(
-                      'TRIKEFIND helps passengers view '
-                      'registered tricycle driver location '
-                      'information in their selected barangay.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.pop(dialogContext),
-                        child: const Text('Close'),
-                      ),
-                    ],
+              onPressed: () => showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('About TRIKEFIND'),
+                  content: const Text(
+                    'TRIKEFIND helps passengers view '
+                    'registered tricycle driver locations '
+                    'in their selected barangay.',
                   ),
-                );
-              },
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(dialogContext),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              ),
               child: const Text(
                 'About',
                 style: TextStyle(color: trikeNavy),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
           ],
           SizedBox(
             width: 110,
@@ -89,9 +137,7 @@ class HomeScreen extends StatelessWidget {
               text: 'Log In',
               fullWidth: true,
               backgroundColor: trikeRed,
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
+              onPressed: _openLogin,
             ),
           ),
         ],
@@ -99,38 +145,31 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLogo() {
-    return const Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.electric_rickshaw_rounded,
-          color: trikeRed,
-          size: 32,
-        ),
-        SizedBox(width: 8),
-        Text(
-          'TRIKEFIND',
-          style: TextStyle(
-            fontSize: 21,
-            fontWeight: FontWeight.bold,
-            color: trikeNavy,
-            letterSpacing: 1,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildHero(BuildContext context) {
-    final isWide = MediaQuery.sizeOf(context).width > 750;
+  final isWide = MediaQuery.sizeOf(context).width > 750;
 
-    return Container(
-      width: double.infinity,
-      color: trikePale,
+  return Container(
+    width: double.infinity,
+    decoration: const BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/images/tricycle.png'),
+        fit: BoxFit.cover,
+      ),
+    ),
+    child: Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 28,
         vertical: 50,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color.fromARGB(255, 130, 130, 126).withValues(alpha: 0.88),
+            trikeNavy.withValues(alpha: 0.62),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
       ),
       child: Center(
         child: ConstrainedBox(
@@ -152,8 +191,9 @@ class HomeScreen extends StatelessWidget {
                 ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildHeroText(BuildContext context) {
     return Column(
@@ -171,16 +211,12 @@ class HomeScreen extends StatelessWidget {
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.circle,
-                color: trikeGreen,
-                size: 10,
-              ),
+              Icon(Icons.circle, color: trikeGreen, size: 10),
               SizedBox(width: 7),
               Text(
                 'YOUR COMMUNITY, CONNECTED',
                 style: TextStyle(
-                  color: trikeNavy,
+                  color: Colors.white,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -203,10 +239,10 @@ class HomeScreen extends StatelessWidget {
         const Text(
           'Know whether registered tricycle drivers are nearby '
           'or available in your selected barangay. TRIKEFIND '
-          'helps passengers find local driver information with '
-          'the help of location-based mapping.',
+          'helps passengers find local driver information '
+          'using location-based mapping.',
           style: TextStyle(
-            color: Color(0xFF536477),
+            color: Color(0xFFF1F5F9),
             fontSize: 16,
             height: 1.7,
           ),
@@ -223,36 +259,30 @@ class HomeScreen extends StatelessWidget {
                 fullWidth: true,
                 backgroundColor: trikeRed,
                 icon: Icons.arrow_forward_rounded,
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
+                onPressed: _openLogin,
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    title: const Text('How TRIKEFIND Works'),
-                    content: const Text(
-                      '1. Log in to your account.\n\n'
-                      '2. Select your barangay.\n\n'
-                      '3. View relevant registered driver '
-                      'location information.\n\n'
-                      'TRIKEFIND focuses on driver localization '
-                      'and availability information. It does '
-                      'not provide ride booking.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.pop(dialogContext),
-                        child: const Text('Got it'),
-                      ),
-                    ],
+              onPressed: () => showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('How TRIKEFIND Works'),
+                  content: const Text(
+                    '1. Log in to your account.\n\n'
+                    '2. Select your barangay.\n\n'
+                    '3. View registered driver location information.\n\n'
+                    'TRIKEFIND focuses on driver localization '
+                    'and availability information, not ride booking.',
                   ),
-                );
-              },
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(dialogContext),
+                      child: const Text('Got it'),
+                    ),
+                  ],
+                ),
+              ),
               icon: const Icon(
                 Icons.play_circle_outline,
                 color: trikeGreen,
@@ -292,6 +322,7 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
+  
 
   Widget _buildFeatures() {
     return Padding(
@@ -366,8 +397,7 @@ class HomeScreen extends StatelessWidget {
                           title: 'Smart Insights',
                           description:
                               'Use location and movement data to '
-                              'support future driver availability '
-                              'predictions.',
+                              'support driver availability predictions.',
                         ),
                       ),
                     ],
@@ -521,6 +551,14 @@ class MapPreview extends StatelessWidget {
           const _MapMarker(left: 55, top: 120),
           const _MapMarker(left: 185, top: 170),
           const _MapMarker(left: 285, top: 105),
+          Positioned(
+            right: 22,
+            bottom: 35,
+            child: Container(
+              width: 145,
+              height: 120,
+            ),
+          ),
           Positioned(
             left: 18,
             bottom: 18,
