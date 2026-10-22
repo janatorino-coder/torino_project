@@ -205,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             vertical: 8,
           ),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFE89A),
+            color: const Color.fromARGB(255, 243, 228, 181),
             borderRadius: BorderRadius.circular(30),
           ),
           child: const Row(
@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'YOUR COMMUNITY, CONNECTED',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 249, 176, 66),
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               label: const Text('How It Works'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: trikeNavy,
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 17,
                   vertical: 16,
@@ -298,6 +298,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
+        ),
+        AppButton(
+          text: 'Submit a Report',
+          fullWidth: true,
+          backgroundColor: const Color.fromARGB(255, 32, 125, 61),
+          icon: Icons.assignment_outlined,
+          onPressed: () {
+            Navigator.pushNamed(context, '/report');
+          },
         ),
         const SizedBox(height: 25),
         const Row(
@@ -312,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(
                 'Focused on your selected barangay',
                 style: TextStyle(
-                  color: Color(0xFF536477),
+                  color: Color.fromARGB(255, 251, 253, 255),
                   fontSize: 13,
                 ),
               ),

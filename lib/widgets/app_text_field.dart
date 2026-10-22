@@ -12,6 +12,8 @@ class AppTextField extends StatefulWidget {
     this.validator,
     this.textInputAction,
     this.onSubmitted,
+    this.minLines = 1,
+    this.maxLines = 1,
   });
 
   final TextEditingController controller;
@@ -22,6 +24,8 @@ class AppTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final int minLines;
+  final int maxLines;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -50,11 +54,18 @@ class _AppTextFieldState extends State<AppTextField> {
           validator: widget.validator,
           textInputAction: widget.textInputAction,
           onFieldSubmitted: widget.onSubmitted,
+          minLines: widget.isPassword ? 1 : widget.minLines,
+          maxLines: widget.isPassword ? 1 : widget.maxLines,
           decoration: InputDecoration(
             hintText: widget.hint,
+            filled: true,
+            fillColor: const Color(0xFFFFFCF4),
             prefixIcon: widget.prefixIcon == null
                 ? null
-                : Icon(widget.prefixIcon),
+                : Icon(
+                    widget.prefixIcon,
+                    color: const Color(0xFF239447),
+                  ),
             suffixIcon: widget.isPassword
                 ? IconButton(
                     tooltip: _obscureText
@@ -72,6 +83,22 @@ class _AppTextFieldState extends State<AppTextField> {
                     ),
                   )
                 : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Color(0xFFDCE5E8),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Color(0xFF239447),
+                width: 1.8,
+              ),
+            ),
           ),
         ),
       ],
